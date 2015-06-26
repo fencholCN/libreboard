@@ -32,7 +32,7 @@ template(name="cardDetails")
           button.primary.confirm.clear.js-add-votes(type="submit") I Want This
 
         each votes
-          +userAvatar(userId=this cardId=../_id)
+          +userAvatar(userId=this.userId cardId=../_id)
 
       .card-details-item.card-details-item-labels
         h3.card-details-item-title {{_ 'labels'}}

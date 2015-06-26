@@ -71,7 +71,8 @@ template(name="cardMemberPopup")
         p.quiet @{{ user.username }}
     if currentUser.isBoardMember
       ul.pop-over-list
-        li: a.js-remove-member {{_ 'remove-member-from-card'}}
+        //- leaving this here in case it's needed later
+        //- li: a.js-remove-member {{_ 'remove-member-from-card'}}
 
         if $eq currentUser._id user._id
           with currentUser
