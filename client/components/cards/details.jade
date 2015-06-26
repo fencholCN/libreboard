@@ -25,7 +25,7 @@ template(name="cardDetails")
 
     .card-details-items
       .card-details-item.card-details-votes
-        h3.card-details-item-title Votes
+        h3.card-details-item-title Votes ({{ votes.count }})
         if hasVotedOnCard
           button.clear.js-add-votes(type="submit") Just kidding, I don't want this
         else
