@@ -25,6 +25,10 @@ BlazeComponent.extendComponent({
     bodyBoardComponent.scrollLeft(scollLeft);
   },
 
+  hasVotedOnCard: function () {
+    return !!CardVotes.findOne({ userId: this.data().userId });
+  },
+
   onDestroyed: function() {
     this.componentParent().showOverlay.set(false);
   },

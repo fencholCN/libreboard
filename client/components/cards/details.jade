@@ -26,18 +26,13 @@ template(name="cardDetails")
     .card-details-items
       .card-details-item.card-details-votes
         h3.card-details-item-title Votes
+        if hasVotedOnCard
+          button.clear.js-add-votes(type="submit") Just kidding, I don't want this
+        else
+          button.primary.confirm.clear.js-add-votes(type="submit") I Want This
+
         each votes
           +userAvatar(userId=this cardId=../_id)
-        //- TODO create a vote icon
-        a.card-votes.add-votes.js-add-votes
-          i.fa.fa-plus
-
-      .card-details-item.card-details-item-members
-        h3.card-details-item-title {{_ 'members'}}
-        each members
-          +userAvatar(userId=this cardId=../_id)
-        a.member.add-member.card-details-item-add-button.js-add-members
-          i.fa.fa-plus
 
       .card-details-item.card-details-item-labels
         h3.card-details-item-title {{_ 'labels'}}
