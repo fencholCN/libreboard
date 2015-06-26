@@ -24,6 +24,14 @@ template(name="cardDetails")
               i.fa.fa-chevron-down
 
     .card-details-items
+      .card-details-item.card-details-votes
+        h3.card-details-item-title Votes
+        each votes
+          +userAvatar(userId=this cardId=../_id)
+        //- TODO create a vote icon
+        a.card-votes.add-votes.js-add-votes
+          i.fa.fa-plus
+
       .card-details-item.card-details-item-members
         h3.card-details-item-title {{_ 'members'}}
         each members

@@ -68,6 +68,17 @@ BlazeComponent.extendComponent({
       'click .js-member': Popup.open('cardMember'),
       'click .js-add-members': Popup.open('cardMembers'),
       'click .js-add-labels': Popup.open('cardLabels'),
+      'click .js-add-votes': function(evt) {
+        var haveCard = CardVotes.findOne({ userId: this.data().userId });
+        if (haveCard) {
+          CardVotes.remove({ _id: haveCard._id });
+        } else {
+          CardVotes.insert({
+            boardId: this.data().boardId,
+            cardId: this.data()._id
+          });
+        }
+      },
       'mouseenter .js-card-details': function() {
         this.componentParent().showOverlay.set(true);
       }

@@ -13,6 +13,11 @@ template(name="minicard")
         each members
           +userAvatar(userId=this)
     .badges
+      if votes.count
+        //- TODO create a vote icon
+        .badge(title="{{_ 'card-comments-title' votes.count }}")
+          span.badge-icon.fa.fa-comment-o
+          span.badge-text= votes.count
       if comments.count
         .badge(title="{{_ 'card-comments-title' comments.count }}")
           span.badge-icon.fa.fa-comment-o

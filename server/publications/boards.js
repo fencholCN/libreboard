@@ -88,6 +88,14 @@ Meteor.publishComposite('board', function(boardId, slug) {
         },
 
         children: [
+          // votes
+          {
+            find: function(card) {
+              return CardVotes.find({
+                cardId: card._id
+              });
+            }
+          },
           // comments
           {
             find: function(card) {

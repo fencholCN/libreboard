@@ -13,6 +13,7 @@
     "activity-removed": "removed %s from %s",
     "activity-attached": "attached %s to %s",
     "activity-on": "on %s",
+    "activity-voted": "%s voted on %s",
     "archives": "Archives",
     "this-board": "this board",
     "this-card": "this card",

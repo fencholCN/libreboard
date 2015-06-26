@@ -1,9 +1,11 @@
 Cards = new Mongo.Collection('cards');
 CardComments = new Mongo.Collection('card_comments');
+CardVotes = new Mongo.Collection('card_votes');
 
 // XXX To improve pub/sub performances a card document should include a
-// de-normalized number of comments so we don't have to publish the whole list
-// of comments just to display the number of them in the board view.
+// de-normalized number of comments (and votes) so we don't have to publish
+// the whole list of comments just to display the number of them in the board
+// view.
 Cards.attachSchema(new SimpleSchema({
   title: {
     type: String
@@ -77,6 +79,25 @@ CardComments.attachSchema(new SimpleSchema({
   }
 }));
 
+CardVotes.attachSchema(new SimpleSchema({
+  boardId: {
+    type: String
+  },
+  cardId: {
+    type: String
+  },
+  // XXX We probably don't need this information here, since we already have it
+  // in the associated comment creation activity
+  createdAt: {
+    type: Date,
+    denyUpdate: false
+  },
+  // XXX Should probably be called `authorId`
+  userId: {
+    type: String
+  }
+}));
+
 if (Meteor.isServer) {
   Cards.allow({
     insert: function(userId, doc) {
@@ -92,6 +113,19 @@ if (Meteor.isServer) {
   });
 
   CardComments.allow({
+    insert: function(userId, doc) {
+      return allowIsBoardMember(userId, Boards.findOne(doc.boardId));
+    },
+    update: function(userId, doc) {
+      return userId === doc.userId;
+    },
+    remove: function(userId, doc) {
+      return userId === doc.userId;
+    },
+    fetch: ['userId', 'boardId']
+  });
+
+  CardVotes.allow({
     insert: function(userId, doc) {
       return allowIsBoardMember(userId, Boards.findOne(doc.boardId));
     },
@@ -135,6 +169,9 @@ Cards.helpers({
   comments: function() {
     return CardComments.find({ cardId: this._id }, { sort: { createdAt: -1 }});
   },
+  votes: function() {
+    return CardVotes.find({ cardId: this._id }, { sort: { createdAt: -1 }});
+  },
   attachments: function() {
     return Attachments.find({ cardId: this._id }, { sort: { uploadedAt: -1 }});
   },
@@ -160,7 +197,16 @@ CardComments.helpers({
   }
 });
 
+CardVotes.helpers({
+  user: function() {
+    return Users.findOne(this.userId);
+  }
+});
+
 CardComments.hookOptions.after.update = { fetchPrevious: false };
+
+CardVotes.hookOptions.after.update = { fetchPrevious: false };
+
 Cards.before.insert(function(userId, doc) {
   doc.createdAt = new Date();
   doc.dateLastActivity = new Date();
@@ -174,6 +220,11 @@ Cards.before.insert(function(userId, doc) {
 });
 
 CardComments.before.insert(function(userId, doc) {
+  doc.createdAt = new Date();
+  doc.userId = userId;
+});
+
+CardVotes.before.insert(function(userId, doc) {
   doc.createdAt = new Date();
   doc.userId = userId;
 });
@@ -282,4 +333,22 @@ if (Meteor.isServer) {
       Activities.remove(activity._id);
     }
   });
+
+  CardVotes.after.insert(function(userId, doc) {
+    Activities.insert({
+      activityType: 'addVote',
+      boardId: doc.boardId,
+      cardId: doc.cardId,
+      voteId: doc._id,
+      userId: userId
+    });
+  });
+
+  CardVotes.after.remove(function(userId, doc) {
+    var activity = Activities.findOne({ voteId: doc._id });
+    if (activity) {
+      Activities.remove(activity._id);
+    }
+  });
+
 }

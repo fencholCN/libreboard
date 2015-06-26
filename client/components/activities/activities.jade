@@ -59,6 +59,9 @@ template(name="boardActivities")
             +viewer
               = comment.text
 
+        if($eq activityType 'addVote')
+          | {{{_ 'activity-voted' memberLink cardLink}}}
+
         if($eq activityType 'addAttachment')
           | {{{_ 'activity-attached' attachmentLink cardLink}}}.
 
@@ -92,7 +95,8 @@ template(name="cardActivities")
           | {{{_ 'activity-attached' attachmentLink cardLabel}}}.
           if attachment.isImage
             img.attachment-image-preview(src=attachment.url)
-
+        if($eq activityType 'addVote')
+          | {{_ 'activity-voted' memberLink cardLabel}}
         if($eq activityType 'addComment')
           +inlinedForm(classNames='js-edit-comment')
             +editor(autofocus=true)
